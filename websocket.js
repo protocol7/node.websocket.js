@@ -150,7 +150,7 @@ Connection.prototype._handle = function(data){
       return false;
     }
 
-    this.module.onData(chunk.slice(1), this);
+    if (this.module && this.module.onData) this.module.onData(chunk.slice(1), this);
   }
 
   this.data = chunks[chunks.length - 1];
@@ -202,12 +202,6 @@ Connection.prototype._handshake = function(data){
     return false;
   }
   
-  if (!this.module.onData){
-    this.log('Module ' + module + '.js doesn\'t implement an onData method.');
-    this.socket.close();
-    return false;
-  }
-  
   this.socket.send(tools.substitute(responseHeaders.join('\r\n'), {
     resource: matches[0],
     host: matches[1],
@@ -217,6 +211,10 @@ Connection.prototype._handshake = function(data){
   
   this.handshaked = true;
   this.log('Handshake sent', 'info');
+
+  // call onConnect callback on module
+  if (this.module && this.module.onConnect) this.module.onConnect(this);
+
   return true;
 };
 

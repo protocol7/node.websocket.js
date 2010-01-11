@@ -23,8 +23,7 @@
         };
 
         webSocket.onmessage = function(event){
-            var object = JSON.parse(event.data);
-            document.getElementById('time').innerHTML = object.time;
+            document.getElementById('time').innerHTML = event.data;
         };
 
         webSocket.onclose = function(event){
